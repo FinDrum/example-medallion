@@ -1,0 +1,41 @@
+event:
+  type: MinIOEventTrigger
+  config:
+    bucket: silver
+    port: 5001
+
+pipeline:
+  - id: reader
+    operator: MinioReader
+    depends_on: MinIOEventTrigger
+    params:
+      access_key: minioadmin
+      secret_key: minioadmin
+      endpoint_url: http://localhost:9000
+
+  - id: infer
+    operator: InferMissingQuarters
+    depends_on: reader
+    params:
+      start_date_column: start
+      end_date_column: end
+
+  - id: value_filter
+    operator: ValueFilter
+    depends_on: infer
+    params:
+      filters:
+        - column: frame
+          regex: 'Q\d{1}'
+          include_na: False
+
+  - id: send_to_feed
+    operator: SendToAPI
+    depends_on: infer
+    params:
+      url: http://localhost:8080/subject/feed
+      source: SEC
+      id_column: cik
+      timestamp_column: end
+      concept_column: concept
+      value_column: val
