@@ -1,0 +1,19 @@
+triggers:
+  - triggers.minio_event_trigger.MinIOEventTrigger
+
+schedulers:
+  - schedulers.daily.DailyScheduler
+
+datasources:
+  - datasources.sec_fact_source.SecFactSource
+
+operators:
+  - operators.column_filter.ColumnFilter
+  - operators.dict_flattener.DictFlattener
+  - operators.infer_missing_quarters.InferMissingQuarters
+  - operators.minio_reader.MinioReader
+  - operators.minio_writer.MinioWriter
+  - operators.postgres_insert_operator.PostgresInsertOperator
+  - operators.send_to_api.SendToAPI
+  - operators.value_filter.ValueFilter
+  - operators.value_mapper.ValueMapper
