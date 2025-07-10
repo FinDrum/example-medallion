@@ -73,7 +73,7 @@ A REST endpoint `/view` accepts:
 - Data topic ("financial", "stock-market"...)
 - YAML-defined view configuration (rows, columns, metrics)
 
-The service constructs time-series views for benchmarking:
+This service was used on a companies benchmarking website:
 
 ![Benchmark Web UI](./imgs/empresa_bechmark_web.png)
 
