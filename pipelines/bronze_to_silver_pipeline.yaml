@@ -1,0 +1,130 @@
+event:
+  type: MinIOEventTrigger
+  config:
+    bucket: bronze
+    port: 5000
+
+pipeline:
+  - id: reader
+    operator: MinioReader
+    depends_on: MinIOEventTrigger
+    params:
+      access_key: minioadmin
+      secret_key: minioadmin
+      endpoint_url: http://localhost:9000
+
+  - id: flatten
+    operator: DictFlattener
+    depends_on: reader
+    params:
+      dict_column: facts
+      keep_columns: ["cik", "entityName"]
+      level_keys: ["fact", "concept", "container", "unit"]
+
+  - id: value_filter
+    operator: ValueFilter
+    depends_on: flatten
+    params:
+      filters:
+        - column: frame
+          regex: '^(CY\d{4}$|CY\d{4}Q\d{1}.*)'
+          include_na: False
+
+  - id: filter
+    operator: ColumnFilter
+    depends_on: value_filter
+    params:
+      include: ["cik", "entityName", "concept", "val", "start", "end", "accn"]
+
+  - id: map_values
+    operator: ValueMapper
+    depends_on: filter
+    params:
+      mappings:
+        - column: concept
+          mapping:
+            NetIncome:
+              - NetIncomeLoss
+              - ProfitLoss
+            Taxes:
+              - IncomeTaxExpenseBenefit
+            InterestExpenses:
+              - InterestExpense
+            OperatingIncome:
+              - OperatingIncomeLoss
+            GeneralAndAdministrativeExpenses:
+              - SellingGeneralAndAdministrativeExpense
+            AmortizationAndDepreciation:
+              - DepreciationDepletionAndAmortization
+            Marketing:
+              - MarketingAndAdvertisingExpense
+            ResearchAndDevelopment:
+              - ResearchAndDevelopmentExpense
+            OperatingExpenses:
+              - OperatingExpenses
+            GrossIncome:
+              - GrossProfit
+            CostOfRevenue:
+              - CostOfGoodsAndServicesSold
+              - CostOfRevenue
+            Revenue:
+              - RevenueFromContractWithCustomerExcludingAssessedTax
+            Cash:
+              - Cash
+            AccountsReceivable:
+              - AccountsReceivableNetCurrent
+            Inventory:
+              - InventoryNet
+            OtherCurrentAssets:
+              - OtherAssetsCurrent
+            CurrentAssets:
+              - AssetsCurrent
+            PropertyPlantAndEquipment:
+              - PropertyPlantAndEquipmentNet
+            IntangibleAssets:
+              - IntangibleAssetsNetExcludingGoodwill
+            Investments:
+              - Investments
+            OtherNonCurrentAssets:
+              - OtherAssetsNoncurrent
+            NonCurrentAssets:
+              - AssetsNoncurrent
+            Assets:
+              - Assets
+            AccountsPayable:
+              - AccountsPayableCurrent
+            ShortTermDebt:
+              - ShortTermBorrowings
+            OtherCurrentLiabilities:
+              - OtherLiabilitiesCurrent
+            CurrentLiabilities:
+              - LiabilitiesCurrent
+            LongTermDebt:
+              - LongTermDebt
+            DeferredTaxLiabilities:
+              - DeferredTaxLiabilities
+            OtherNonCurrentLiabilities:
+              - OtherLiabilitiesNoncurrent
+            NonCurrentLiabilities:
+              - LiabilitiesNoncurrent
+            Liabilities:
+              - Liabilities
+            Equity:
+              - StockholdersEquity
+            OtherEquity:
+              - StockholdersEquityOther
+            CommonStock:
+              - CommonStockValue
+            RetainedEarnings:
+              - RetainedEarningsAccumulatedDeficit
+
+  - id: export_to_minio
+    operator: MinioWriter
+    depends_on: map_values
+    params:
+      bucket: silver
+      prefix: company_facts
+      access_key: minioadmin
+      secret_key: minioadmin
+      endpoint_url: http://localhost:9000
+      format: parquet

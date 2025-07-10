@@ -1,0 +1,23 @@
+scheduler:
+  type: DailyScheduler
+  config:
+    hour: 16
+    minute: 22
+
+pipeline:
+  - id: fetch_sec_facts_data
+    datasource: SecFactSource
+    params:
+      email: oscar.rico101@alu.ulpgc.es
+      ciks: ["0000320193", "0001318605"]
+
+  - id: export_to_minio
+    operator: MinioWriter
+    depends_on: fetch_sec_facts_data
+    params:
+      bucket: bronze
+      prefix: company_facts
+      access_key: minioadmin
+      secret_key: minioadmin
+      endpoint_url: http://localhost:9000
+      format: json
