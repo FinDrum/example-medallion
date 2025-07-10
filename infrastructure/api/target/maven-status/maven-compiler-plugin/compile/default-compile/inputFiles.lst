@@ -1,0 +1,6 @@
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/SubjectStoreApiApplication.java
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/controller/SubjectController.java
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/model/FeedRequest.java
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/model/ViewRequest.java
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/service/SubjectStoreService.java
+/home/oscar/TFG/GitHub/Medallion-Architecture/infrastructure/api/src/main/java/com/subjectstore/service/ViewService.java

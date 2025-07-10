@@ -1,0 +1,7 @@
+com/subjectstore/model/FeedRequest.class
+com/subjectstore/model/ViewRequest.class
+com/subjectstore/service/ViewService.class
+com/subjectstore/SubjectStoreApiApplication.class
+com/subjectstore/service/SubjectStoreService$StoreWithConnection.class
+com/subjectstore/controller/SubjectController.class
+com/subjectstore/service/SubjectStoreService.class
